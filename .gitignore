@@ -1,7 +1,27 @@
+# Root-level node_modules (e2e / workspace tooling)
 node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Env files (never commit real secrets)
 .env
 .env.*
 !.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Coverage
+coverage/
+
+# Playwright output
 playwright-report/
 test-results/
-npm-debug.log*
