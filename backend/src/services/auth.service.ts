@@ -57,6 +57,19 @@ export const createAccessToken = (user: UserDocument): string =>
     expiresIn: env.JWT_ACCESS_TTL as SignOptions["expiresIn"],
   });
 
+export const createReauthenticationToken = (userId: string): string =>
+  jwt.sign({ sub: userId, tokenType: "account_reauth" }, env.JWT_ACCESS_SECRET, { expiresIn: "5m" });
+
+export const verifyReauthenticationToken = (token: string | undefined, userId: string): boolean => {
+  if (!token) return false;
+  try {
+    const payload = jwt.verify(token, env.JWT_ACCESS_SECRET);
+    return typeof payload !== "string" && payload.sub === userId && payload.tokenType === "account_reauth";
+  } catch {
+    return false;
+  }
+};
+
 const hashRefreshToken = (token: string): string =>
   createHash("sha256").update(token).digest("hex");
 

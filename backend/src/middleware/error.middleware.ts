@@ -15,12 +15,8 @@ export const notFoundHandler: RequestHandler = (request, _response, next) => {
   );
 };
 
-export const errorHandler: ErrorRequestHandler = (
-  error,
-  request,
-  response,
-  _next,
-) => {
+export const errorHandler: ErrorRequestHandler = (error, request, response, next) => {
+  void next;
   if (error instanceof ZodError) {
     response.status(422).json({
       error: {

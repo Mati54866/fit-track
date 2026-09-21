@@ -10,7 +10,9 @@
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
+    "test:e2e": "npm --prefix .. run test:e2e",
     "lint": "eslint ."
   },
   "engines": {

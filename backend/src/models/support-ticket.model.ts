@@ -10,14 +10,14 @@ const supportTicketSchema = new Schema(
     },
     category: {
       type: String,
-      enum: ["support", "bug", "feedback"],
+      enum: ["bug", "feature_request", "account", "other"],
       required: true,
     },
     subject: { type: String, required: true, trim: true, maxlength: 160 },
     message: { type: String, required: true, trim: true, maxlength: 5_000 },
     status: {
       type: String,
-      enum: ["open", "in_progress", "closed"],
+      enum: ["open", "in_progress", "resolved"],
       default: "open",
     },
   },

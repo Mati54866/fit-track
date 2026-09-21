@@ -8,10 +8,9 @@ import { objectIdSchema } from "../utils/request.js";
 
 const reminderSchema = z.object({
   title: z.string().trim().min(1).max(120),
-  targetType: z.enum(["workout", "nutrition", "goal"]),
-  targetId: objectIdSchema.optional(),
+  linkedGoalId: objectIdSchema.optional(),
   dueAt: z.coerce.date(),
-  repeat: z.enum(["none", "daily", "weekly", "monthly"]).default("none"),
+  repeatRule: z.enum(["none", "daily", "weekly", "monthly"]).default("none"),
   enabled: z.boolean().default(true),
 });
 

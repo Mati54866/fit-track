@@ -4,7 +4,9 @@ import { env } from "./config/env.js";
 import { logger } from "./utils/logger.js";
 
 const start = async (): Promise<void> => {
-  await connectDatabase();
+  if (env.NODE_ENV !== "test") {
+    await connectDatabase();
+  }
 
   const server = app.listen(env.PORT, () => {
     logger.info({ port: env.PORT, environment: env.NODE_ENV }, "API listening");

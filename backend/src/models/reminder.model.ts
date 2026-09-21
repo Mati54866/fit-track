@@ -9,14 +9,9 @@ const reminderSchema = new Schema(
       index: true,
     },
     title: { type: String, required: true, trim: true, maxlength: 120 },
-    targetType: {
-      type: String,
-      enum: ["workout", "nutrition", "goal"],
-      required: true,
-    },
-    targetId: { type: Schema.Types.ObjectId },
+    linkedGoalId: { type: Schema.Types.ObjectId, ref: "Goal" },
     dueAt: { type: Date, required: true, index: true },
-    repeat: {
+    repeatRule: {
       type: String,
       enum: ["none", "daily", "weekly", "monthly"],
       default: "none",
