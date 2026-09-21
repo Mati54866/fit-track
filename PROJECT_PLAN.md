@@ -15,39 +15,49 @@ A mobile-responsive web application for fitness and nutrition tracking. Users ca
 ### Functional Requirements
 
 **User Management**
+
 - User Registration: unique username + password; profile includes name, email, profile picture
 - User Login: secure credential login
 - User Profiles: view + update profile info (picture, name, basic info)
 
 **Fitness Tracking**
+
 - Workout Tracking: create/edit/delete workout routines; each routine has exercise name, sets, reps, weights, notes; categorized (strength, cardio) and taggable
 - Nutrition Tracking: log daily food intake by meal type (breakfast/lunch/dinner/snacks); each entry has food items, quantities, nutritional details (calories, macros)
 - Progress Tracking: record weight, body measurements, performance metrics (run times, lifting weights); generate graphs over time
 
 **Dashboard**
+
 - Personalized dashboard: overview of fitness journey, recent workouts, nutrition logs, progress
 - Workout Analytics: charts/graphs of workout data, lifting progress, frequency, exercise history
 - Nutrition Analytics: calorie intake, macro distribution, daily consumption trends
 
 **Activity Notifications**
+
 - Notify on: workout completion, goal achievement, new followers, forum responses
 
 **Search and Filtering**
+
 - Search workouts, nutrition entries, other users; filters to sort/narrow results
 
 **Mobile Compatibility**
+
 - Fully responsive across smartphones and tablets
 
 **Reporting and Export**
+
 - Generate progress/nutrition reports; export as PDF and CSV
 
 **Notifications and Alerts**
+
 - User-set reminders/alerts for workouts, meals, goals
 
 **Settings and Preferences**
+
 - Notification preferences, units of measurement, theme preferences
 
 **Feedback and Support**
+
 - Support system for contact, issue reporting, feedback
 
 ### Non-Functional Requirements
@@ -71,17 +81,18 @@ A mobile-responsive web application for fitness and nutrition tracking. Users ca
 
 **"Scale-ready" practices to follow from day one** (cheap now, expensive to retrofit later):
 
-| Practice | Why |
-|---|---|
-| Stateless auth (JWT, not server-side sessions) | Breaks otherwise the moment a 2nd server/instance is added behind a load balancer |
-| All config via environment variables (`.env`, never committed) | Required for multi-instance / containerized deployment later |
-| Layered backend structure: routes → controllers → services → data access | Makes it possible to later extract a piece into its own microservice without a rewrite |
-| Dockerize the app from day one | Turns "add a load balancer in front of multiple containers" into a config change, not a redesign |
-| Plan DB indexes early on frequently queried fields (e.g. `userId`, dates) | Avoids slow queries as data grows |
-| Centralized structured logging from day one | Directly satisfies the "Logging and Monitoring" NFR; makes debugging painless |
-| No assumption of a single running instance (e.g. no local-disk file storage for uploads) | Local disk breaks the moment there are 2+ app instances — use Cloudinary from the start |
+| Practice                                                                                 | Why                                                                                              |
+| ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Stateless auth (JWT, not server-side sessions)                                           | Breaks otherwise the moment a 2nd server/instance is added behind a load balancer                |
+| All config via environment variables (`.env`, never committed)                           | Required for multi-instance / containerized deployment later                                     |
+| Layered backend structure: routes → controllers → services → data access                 | Makes it possible to later extract a piece into its own microservice without a rewrite           |
+| Dockerize the app from day one                                                           | Turns "add a load balancer in front of multiple containers" into a config change, not a redesign |
+| Plan DB indexes early on frequently queried fields (e.g. `userId`, dates)                | Avoids slow queries as data grows                                                                |
+| Centralized structured logging from day one                                              | Directly satisfies the "Logging and Monitoring" NFR; makes debugging painless                    |
+| No assumption of a single running instance (e.g. no local-disk file storage for uploads) | Local disk breaks the moment there are 2+ app instances — use Cloudinary from the start          |
 
 **Deferred to a later "v2 scale phase"** (design/document now, build only when actually needed):
+
 - Real Load Balancer in front of multiple app instances
 - API Gateway (routing, centralized rate limiting/auth enforcement)
 - Redis caching layer
@@ -98,6 +109,7 @@ A mobile-responsive web application for fitness and nutrition tracking. Users ca
 ```
 
 Future v2 (not built yet):
+
 ```
 [ Client ] → [ Load Balancer ] → [ API Gateway ] → [ App instances (N) ] → [ MongoDB + Redis cache + replicas ]
 ```
@@ -106,15 +118,15 @@ Future v2 (not built yet):
 
 ## 4. Tech Stack — [DECIDED]
 
-| Layer | Choice | Notes |
-|---|---|---|
-| Frontend | React + **TypeScript** | Responsive; 3D animation layer to be decided during frontend phase (candidate: Three.js / React Three Fiber) |
-| Backend | Node.js + Express + **TypeScript** | Layered architecture (see above) |
-| Database | MongoDB + Mongoose (ODM) | Chosen by project owner. Note: much of this data (users→workouts→sets, users→nutrition→food items) is fairly relational; MongoDB works fine here but deep relational queries (e.g. joins across users/workouts/nutrition for aggregate stats) take more deliberate schema design (embedding vs referencing) than they would in a relational DB. Schema to be designed accordingly. |
-| Auth | JWT (stateless) for email/password **+** Google OAuth via Passport.js (`passport-google-oauth20`) | Both methods offered — see Section 5 |
-| Image storage | Cloudinary | Chosen over ImageKit for maturity, documentation, community resources, built-in transforms |
-| Repo hosting | GitHub, **public** repository | Doubles as a portfolio piece; confirm no employer/client confidentiality constraint applies |
-| Containerization | Docker (from day one, single container to start) | |
+| Layer            | Choice                                                                                            | Notes                                                                                                                                                                                                                                                                                                                                                                              |
+| ---------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Frontend         | React + **TypeScript**                                                                            | Responsive; 3D animation layer to be decided during frontend phase (candidate: Three.js / React Three Fiber)                                                                                                                                                                                                                                                                       |
+| Backend          | Node.js + Express + **TypeScript**                                                                | Layered architecture (see above)                                                                                                                                                                                                                                                                                                                                                   |
+| Database         | MongoDB + Mongoose (ODM)                                                                          | Chosen by project owner. Note: much of this data (users→workouts→sets, users→nutrition→food items) is fairly relational; MongoDB works fine here but deep relational queries (e.g. joins across users/workouts/nutrition for aggregate stats) take more deliberate schema design (embedding vs referencing) than they would in a relational DB. Schema to be designed accordingly. |
+| Auth             | JWT (stateless) for email/password **+** Google OAuth via Passport.js (`passport-google-oauth20`) | Both methods offered — see Section 5                                                                                                                                                                                                                                                                                                                                               |
+| Image storage    | Cloudinary                                                                                        | Chosen over ImageKit for maturity, documentation, community resources, built-in transforms                                                                                                                                                                                                                                                                                         |
+| Repo hosting     | GitHub, **public** repository                                                                     | Doubles as a portfolio piece; confirm no employer/client confidentiality constraint applies                                                                                                                                                                                                                                                                                        |
+| Containerization | Docker (from day one, single container to start)                                                  |                                                                                                                                                                                                                                                                                                                                                                                    |
 
 ---
 
@@ -123,6 +135,7 @@ Future v2 (not built yet):
 **Both** email/password AND Google Sign-In are offered (not either/or). The original requirements explicitly mandate "unique username and password" registration, so that must exist regardless; Google Sign-In is added as a convenience option.
 
 **Google OAuth setup (current, 2026 Google Cloud Console):**
+
 1. Create a project at console.cloud.google.com (no billing required for this).
 2. Open **Google Auth Platform** in the sidebar (this replaced the old "OAuth consent screen" page in the 2025–2026 console redesign).
 3. Configure **Branding** and **Audience** — choose **External** (public Google users), not Internal. This cannot easily be changed later.
@@ -135,11 +148,12 @@ Future v2 (not built yet):
    ```
 7. Never commit `.env` — it must be in `.gitignore` from the first commit.
 
-**Avatar handling:** if a user signs up via Google, store the Google-hosted avatar **URL** directly in the `User` document — do not re-upload it to Cloudinary. Only images the user *uploads themselves* (custom profile picture) go through Cloudinary.
+**Avatar handling:** if a user signs up via Google, store the Google-hosted avatar **URL** directly in the `User` document — do not re-upload it to Cloudinary. Only images the user _uploads themselves_ (custom profile picture) go through Cloudinary.
 
 **JWT delivery:** issued as a **secure, HttpOnly cookie** (`Secure`, `SameSite=Lax`, reasonable expiry) — not stored in localStorage/sessionStorage. This closes off token theft via XSS, since client-side JavaScript cannot read an HttpOnly cookie.
 
 **Auth flow:**
+
 ```
 Landing Page
  ├─ Sign Up → [Continue with Google] or [Email/Username/Password form]
@@ -159,6 +173,7 @@ Landing Page
 ## 6. Site Map — [DECIDED — structure; DETAILED FLOWS STILL TBD]
 
 **Public pages:**
+
 - Home / Landing
 - About Us
 - Features
@@ -169,6 +184,7 @@ Landing Page
 - 404 Not Found
 
 **Private pages (auth required):**
+
 - Dashboard (hub: recent workouts, nutrition summary, progress snapshot)
 - Workouts (list + create/edit/delete)
 - Nutrition Log (daily food entries)
@@ -184,38 +200,38 @@ Landing Page
 
 ## 7. Requirement Coverage Matrix — [DECIDED, confirmed with project owner]
 
-| Requirement | Status |
-|---|---|
-| Unique username/password registration | ✅ Planned |
-| Registration incl. name, email, profile picture | ✅ Planned |
-| Secure login | ✅ JWT |
-| Google Sign-in | ✅ Added, Passport.js |
-| Editable profile | ✅ Planned |
-| Workout CRUD w/ sets, reps, weight, notes, category/tags | ✅ Planned — schema TBD |
-| Nutrition log w/ meal type, items, quantities, calories/macros | ✅ Planned — schema TBD |
-| Progress tracking + graphs | ✅ Planned |
-| Dashboard overview | ✅ Planned |
-| Workout analytics | ✅ Planned |
-| Nutrition analytics | ✅ Planned |
-| Activity notifications (workout, goals, ~~followers, forum~~) | ✅ v1 = workout completion + goal achievement only. Followers/forum **deferred to Phase 2** — see Section 11 |
-| Search & filter (workouts, nutrition entries) | ✅ v1 = workouts + nutrition entries only. Searching "other users" **deferred to Phase 2** (tied to social scope) |
-| Mobile responsive | ✅ React handles most of this by default |
-| Report export (PDF/CSV) | ✅ Planned — v1 |
-| Reminders/alerts | ✅ v1, **in-app only** — see Section 11 |
-| User preferences (units, theme, notifications) | ✅ Planned |
-| Support/feedback system | ✅ Planned |
-| 1–2s response time | Plan: indexed queries now; Redis caching in v2 scale phase |
-| Handle hundreds of concurrent users, horizontal scaling | Plan: stateless JWT + Docker now; LB/API Gateway in v2 |
-| Data encryption at rest/in transit | Plan: HTTPS + bcrypt password hashing + encrypted sensitive fields — implementation detail TBD |
-| Authorization (users only see own data) | Plan: middleware checks `userId` on every protected route |
-| GDPR compliance, consent | Plan: Privacy Policy page + explicit consent checkbox at signup + data export/deletion endpoints — see Section 13 |
-| 99% uptime, backups | ✅ Decided — see Section 11 (Render + MongoDB Atlas) |
-| Accessibility (WCAG) | ✅ Decided — see Section 10 (respects `prefers-reduced-motion`, dark+light theme support) |
-| Cross-browser/mobile compatibility | Plan: React defaults + manual testing across browsers |
-| Logging & monitoring | Plan: e.g. Winston/Morgan — **exact tooling not finalized** |
-| Test coverage (unit/integration/e2e) | ✅ Decided — see Section 11 (Vitest + Playwright) |
-| Security testing / pen testing | Deferred to a later phase; basic hygiene only for v1 (hashed passwords, input validation, rate-limiting, `npm audit`) — see Section 11 |
-| User + developer documentation, demo video | Plan: produce at the end of the build |
+| Requirement                                                    | Status                                                                                                                                 |
+| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Unique username/password registration                          | ✅ Planned                                                                                                                             |
+| Registration incl. name, email, profile picture                | ✅ Planned                                                                                                                             |
+| Secure login                                                   | ✅ JWT                                                                                                                                 |
+| Google Sign-in                                                 | ✅ Added, Passport.js                                                                                                                  |
+| Editable profile                                               | ✅ Planned                                                                                                                             |
+| Workout CRUD w/ sets, reps, weight, notes, category/tags       | ✅ Planned — schema TBD                                                                                                                |
+| Nutrition log w/ meal type, items, quantities, calories/macros | ✅ Planned — schema TBD                                                                                                                |
+| Progress tracking + graphs                                     | ✅ Planned                                                                                                                             |
+| Dashboard overview                                             | ✅ Planned                                                                                                                             |
+| Workout analytics                                              | ✅ Planned                                                                                                                             |
+| Nutrition analytics                                            | ✅ Planned                                                                                                                             |
+| Activity notifications (workout, goals, ~~followers, forum~~)  | ✅ v1 = workout completion + goal achievement only. Followers/forum **deferred to Phase 2** — see Section 11                           |
+| Search & filter (workouts, nutrition entries)                  | ✅ v1 = workouts + nutrition entries only. Searching "other users" **deferred to Phase 2** (tied to social scope)                      |
+| Mobile responsive                                              | ✅ React handles most of this by default                                                                                               |
+| Report export (PDF/CSV)                                        | ✅ Planned — v1                                                                                                                        |
+| Reminders/alerts                                               | ✅ v1, **in-app only** — see Section 11                                                                                                |
+| User preferences (units, theme, notifications)                 | ✅ Planned                                                                                                                             |
+| Support/feedback system                                        | ✅ Planned                                                                                                                             |
+| 1–2s response time                                             | Plan: indexed queries now; Redis caching in v2 scale phase                                                                             |
+| Handle hundreds of concurrent users, horizontal scaling        | Plan: stateless JWT + Docker now; LB/API Gateway in v2                                                                                 |
+| Data encryption at rest/in transit                             | Plan: HTTPS + bcrypt password hashing + encrypted sensitive fields — implementation detail TBD                                         |
+| Authorization (users only see own data)                        | Plan: middleware checks `userId` on every protected route                                                                              |
+| GDPR compliance, consent                                       | Plan: Privacy Policy page + explicit consent checkbox at signup + data export/deletion endpoints — see Section 13                      |
+| 99% uptime, backups                                            | ✅ Decided — see Section 11 (Render + MongoDB Atlas)                                                                                   |
+| Accessibility (WCAG)                                           | ✅ Decided — see Section 10 (respects `prefers-reduced-motion`, dark+light theme support)                                              |
+| Cross-browser/mobile compatibility                             | Plan: React defaults + manual testing across browsers                                                                                  |
+| Logging & monitoring                                           | Plan: e.g. Winston/Morgan — **exact tooling not finalized**                                                                            |
+| Test coverage (unit/integration/e2e)                           | ✅ Decided — see Section 11 (Vitest + Playwright)                                                                                      |
+| Security testing / pen testing                                 | Deferred to a later phase; basic hygiene only for v1 (hashed passwords, input validation, rate-limiting, `npm audit`) — see Section 11 |
+| User + developer documentation, demo video                     | Plan: produce at the end of the build                                                                                                  |
 
 ---
 
@@ -249,23 +265,23 @@ Every item below was surfaced during planning and has now been decided. Kept her
 
 **Color palette — [DECIDED]:** Deliberately avoiding the generic single-green-on-black look most fitness dashboards default to. Two accent colors split by data type, not one — gold ties to achievement/workout data (medals, personal bests), violet stays for nutrition:
 
-| Token | Hex | Usage |
-|---|---|---|
-| `--bg` | `#0A0A0C` | App background |
-| `--surface` | `#151519` | Cards, panels |
-| `--border` | `#232328` | Card borders, dividers |
-| `--text` | `#E8E8EA` | Primary text |
-| `--muted` | `#7A7A82` | Secondary/label text |
-| `--accent-workout` | `#E8B54D` (gold) | Workout/strength/achievement data — charts, workout tags, CTAs tied to training |
-| `--accent-nutrition` | `#B084FF` (violet) | Nutrition data — charts, macro rings, meal tags |
+| Token                | Hex                | Usage                                                                           |
+| -------------------- | ------------------ | ------------------------------------------------------------------------------- |
+| `--bg`               | `#0A0A0C`          | App background                                                                  |
+| `--surface`          | `#151519`          | Cards, panels                                                                   |
+| `--border`           | `#232328`          | Card borders, dividers                                                          |
+| `--text`             | `#E8E8EA`          | Primary text                                                                    |
+| `--muted`            | `#7A7A82`          | Secondary/label text                                                            |
+| `--accent-workout`   | `#E8B54D` (gold)   | Workout/strength/achievement data — charts, workout tags, CTAs tied to training |
+| `--accent-nutrition` | `#B084FF` (violet) | Nutrition data — charts, macro rings, meal tags                                 |
 
 Light theme equivalents (background/surface/text inverted, same two accents kept — they work on light backgrounds too) to be defined during frontend build.
 
 **Animation strategy — split by page type, not applied uniformly:**
 
-| Page type | Pages | Animation approach |
-|---|---|---|
-| Public / marketing | Home, About, Features | Full scroll-driven "wow factor" animation: **GSAP + ScrollTrigger**, optionally with **Three.js / React Three Fiber** for true 3D elements that respond to scroll. No live user data on these pages, so heavier animation cost is acceptable here. |
+| Page type           | Pages                                                                  | Animation approach                                                                                                                                                                                                                                                                                             |
+| ------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Public / marketing  | Home, About, Features                                                  | Full scroll-driven "wow factor" animation: **GSAP + ScrollTrigger**, optionally with **Three.js / React Three Fiber** for true 3D elements that respond to scroll. No live user data on these pages, so heavier animation cost is acceptable here.                                                             |
 | Authenticated / app | Dashboard, Workouts, Nutrition, Progress, Analytics, Profile, Settings | **Framer Motion only** — light, fast transitions (fade/slide on route change, subtle hover/tap feedback). No heavy 3D or parallax here: these are data-heavy, functional screens the user interacts with mid-workout, and both the 1–2s response-time NFR and general usability depend on this staying snappy. |
 
 **Reasoning (for the coding agent — do not "improve" this by adding more animation to app pages):** this split is a deliberate trade-off between visual impact and the project's own performance/usability requirements, not a corner being cut. A gym-tracking dashboard fighting the user with animation while they're mid-set is a real usability failure, not a style choice.
@@ -273,6 +289,7 @@ Light theme equivalents (background/surface/text inverted, same two accents kept
 **Accessibility requirement tied to animation:** all animation (both the GSAP marketing-page effects and the Framer Motion app transitions) must respect the browser's `prefers-reduced-motion` setting — when a user has that OS/browser setting enabled, animations must be disabled or reduced to instant/near-instant transitions. This is a hard WCAG requirement from the original spec, not optional polish. Implementation: check `window.matchMedia('(prefers-reduced-motion: reduce)')` and branch animation config accordingly (both libraries support this pattern).
 
 **Libraries locked in:**
+
 - Framer Motion — app-wide UI transitions
 - GSAP + ScrollTrigger — marketing page scroll animation
 - Three.js / React Three Fiber — only if/when a true 3D element is designed for the marketing pages (decide the specific 3D element design during the frontend build phase, not before — don't over-plan visuals that haven't been designed yet)
@@ -284,6 +301,7 @@ Light theme equivalents (background/surface/text inverted, same two accents kept
 **v1 (MVP) scope:** Everything in the original requirements doc (Section 2) **except** the social/forum feature. This includes: auth (email/password + Google), profiles, workout CRUD, nutrition logging, progress tracking + graphs, dashboard, workout/nutrition analytics as described in the doc, search & filter (workouts/nutrition only), mobile responsiveness, PDF/CSV export, in-app reminders/alerts, settings/preferences, and a support/feedback system.
 
 **Phase 2 (explicitly deferred, not built until v1 ships):**
+
 - Social features: following other users, forum/community area, "new followers"/"forum responses" notifications, user search/discoverability
 - Email or push-based reminder delivery (v1 is in-app only)
 - Full penetration testing (v1 uses basic security hygiene only: hashed passwords, input validation, login rate-limiting, `npm audit` dependency scanning)
@@ -293,6 +311,7 @@ Light theme equivalents (background/surface/text inverted, same two accents kept
 **Testing stack:** **Vitest** for unit and integration tests (backend and frontend), **Playwright** for end-to-end tests. Chosen for strong TypeScript support and modern tooling fit with the rest of the stack.
 
 **Deployment targets:**
+
 - Backend: **Render** (simplest setup for a Node/Express app, minimal DevOps overhead — appropriate for this project's stage; AWS considered but deferred as unnecessary complexity for now)
 - Database: **MongoDB Atlas**
 - Frontend: **Vercel** (decided in advance; actual deployment happens once the frontend phase begins)
@@ -300,9 +319,10 @@ Light theme equivalents (background/surface/text inverted, same two accents kept
 **Reminder delivery:** **In-app only for v1.** A reminder/alert appears within the app when due. Email or push notification delivery requires a separate provider (e.g. Resend for email) and is deferred to Phase 2, pending a provider decision at that time.
 
 **AI feature (Phase 2, scoped in advance so it doesn't get built as a generic chatbot):** An "Ask your coach" style feature, split by the right underlying technique rather than treated as one generic "AI/RAG" bucket —
+
 - Structured questions about the user's own data (e.g. "how's my squat progress this month?") → **function calling** against MongoDB queries, not RAG
 - Semantic search over free-text the user has written (workout notes, etc.) → **RAG**, using MongoDB Atlas's built-in vector search (no separate vector DB needed)
-This is explicitly Phase 2 — do not build until v1 is complete.
+  This is explicitly Phase 2 — do not build until v1 is complete.
 
 ---
 
@@ -422,6 +442,7 @@ This is explicitly Phase 2 — do not build until v1 is complete.
 ```
 
 **Data rights endpoints (GDPR — required, not optional, per the NFR in Section 2):**
+
 - `GET /api/users/me/export` — returns all of the requesting user's data (profile, workouts, nutrition entries, progress entries, goals, reminders) as a single JSON (or CSV, reusing the existing export tooling) download — satisfies the GDPR right of access
 - `DELETE /api/users/me` — deletes the user's account and all associated documents across every collection above (cascading delete, not a soft flag) — satisfies the GDPR right to erasure. Require re-entering password (or re-confirming via Google) before executing, given this is irreversible.
 
@@ -432,6 +453,7 @@ This is explicitly Phase 2 — do not build until v1 is complete.
 ## 14. Repo Structure & Git Workflow — [DECIDED]
 
 **Folder structure:**
+
 ```
 /backend
   /src
@@ -455,6 +477,7 @@ README.md
 ```
 
 **Git branching model:**
+
 - `main` — protected, always deployable, direct pushes disabled
 - `dev` — integration branch; feature branches merge here first
 - `feature/<short-name>` — one per feature (e.g. `feature/workout-crud`)
@@ -472,11 +495,11 @@ README.md
 
 Rather than detailing every individual page's edge cases (impractical to fully enumerate upfront), every page in the app must implement these same four states consistently. This directly answers the original "what happens if the internet stops working" question:
 
-| State | Behavior |
-|---|---|
-| **Loading** | Skeleton/placeholder matching the eventual layout — never a blank screen |
-| **Empty** | A specific, helpful empty state per page (e.g. Workouts: "No workouts yet — create your first one" with a CTA button), never just a blank list |
-| **Error (server error)** | Inline error message with a "Retry" action; the rest of the page's already-loaded data (e.g. nav, cached sections) stays visible and usable |
+| State                         | Behavior                                                                                                                                                                                                                                                                                                                                               |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Loading**                   | Skeleton/placeholder matching the eventual layout — never a blank screen                                                                                                                                                                                                                                                                               |
+| **Empty**                     | A specific, helpful empty state per page (e.g. Workouts: "No workouts yet — create your first one" with a CTA button), never just a blank list                                                                                                                                                                                                         |
+| **Error (server error)**      | Inline error message with a "Retry" action; the rest of the page's already-loaded data (e.g. nav, cached sections) stays visible and usable                                                                                                                                                                                                            |
 | **Offline / network failure** | Detected via `navigator.onLine` and failed fetch handling. Show a persistent but unobtrusive banner ("You're offline — showing last saved data"), continue displaying the last successfully fetched data from local state, and queue no destructive actions (disable Save/Delete buttons rather than silently failing them) until connectivity returns |
 
 This pattern applies to every private page (Dashboard, Workouts, Nutrition, Progress, Analytics, Profile, Settings, Notifications, Reports) — the agent should implement it once as a shared pattern/hook (e.g. a `useDataFetch` hook or equivalent) and reuse it, not rebuild it per page.
