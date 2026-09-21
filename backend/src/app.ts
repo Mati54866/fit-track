@@ -55,6 +55,7 @@ app.use("/api/v1/reminders", reminderRouter);
 app.use("/api/v1/support-tickets", supportTicketRouter);
 app.use("/api/v1/profile", profileRouter);
 app.use("/api/v1/account", accountRouter);
+app.use("/api/users/me", accountRouter);
 app.use("/api/v1/analytics", analyticsRouter);
 app.use("/api/v1/reports", reportRouter);
 

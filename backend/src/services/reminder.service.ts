@@ -26,7 +26,7 @@ export const triggerDueReminders = async (userId: string): Promise<void> => {
       message: reminder.title,
     });
     reminder.lastTriggeredAt = new Date();
-    const nextDue = nextDueDate(reminder.dueAt, reminder.repeat);
+    const nextDue = nextDueDate(reminder.dueAt, reminder.repeatRule);
     if (nextDue) reminder.dueAt = nextDue;
     else reminder.enabled = false;
     await reminder.save();

@@ -5,7 +5,7 @@ import { SupportTicketModel } from "../models/support-ticket.model.js";
 import { paginationSchema } from "../utils/request.js";
 
 const ticketSchema = z.object({
-  category: z.enum(["support", "bug", "feedback"]),
+  category: z.enum(["bug", "feature_request", "account", "other"]),
   subject: z.string().trim().min(1).max(160),
   message: z.string().trim().min(1).max(5_000),
 });

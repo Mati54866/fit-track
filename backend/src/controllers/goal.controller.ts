@@ -8,30 +8,21 @@ import { objectIdSchema } from "../utils/request.js";
 const goalBaseSchema = z.object({
   type: z.enum([
     "workout_count",
-    "calories",
-    "protein",
-    "carbs",
-    "fat",
-    "weight",
+    "calorie_target",
+    "macro_target",
+    "target_weight",
   ]),
   targetValue: z.number().nonnegative(),
-  period: z.enum(["daily", "weekly", "monthly", "one_time"]),
+  targetUnit: z.string().trim().min(1).max(40).optional(),
   deadline: z.coerce.date().optional(),
-  weightDirection: z.enum(["lose", "gain"]).optional(),
 });
 
 const goalSchema = goalBaseSchema.superRefine((input, context) => {
-  if (input.type === "weight" && !input.weightDirection)
+  if (input.type === "macro_target" && !["protein", "carbs", "fat"].includes(input.targetUnit ?? ""))
     context.addIssue({
       code: "custom",
-      path: ["weightDirection"],
-      message: "Weight goals require weightDirection",
-    });
-  if (input.type !== "weight" && input.weightDirection)
-    context.addIssue({
-      code: "custom",
-      path: ["weightDirection"],
-      message: "weightDirection is only valid for weight goals",
+      path: ["targetUnit"],
+      message: "Macro goals require protein, carbs, or fat as targetUnit",
     });
 });
 

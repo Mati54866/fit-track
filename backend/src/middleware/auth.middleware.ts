@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import jwt, { type JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 import { env } from "../config/env.js";
 import { AppError } from "../utils/app-error.js";

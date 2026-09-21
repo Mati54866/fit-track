@@ -10,23 +10,12 @@ const goalSchema = new Schema(
     },
     type: {
       type: String,
-      enum: ["workout_count", "calories", "protein", "carbs", "fat", "weight"],
+      enum: ["workout_count", "calorie_target", "macro_target", "target_weight"],
       required: true,
     },
     targetValue: { type: Number, required: true, min: 0 },
-    period: {
-      type: String,
-      enum: ["daily", "weekly", "monthly", "one_time"],
-      required: true,
-    },
+    targetUnit: { type: String, trim: true, maxlength: 40 },
     deadline: { type: Date },
-    weightDirection: {
-      type: String,
-      enum: ["lose", "gain"],
-      required: function () {
-        return this.type === "weight";
-      },
-    },
     achieved: { type: Boolean, default: false },
     achievedAt: { type: Date },
   },

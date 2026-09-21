@@ -12,8 +12,8 @@ import {
 import { passport } from "../config/passport.js";
 import { env } from "../config/env.js";
 import { requireAuth, requireCsrf } from "../middleware/auth.middleware.js";
-import { createSession } from "../services/auth.service.js";
-import { setSessionCookies } from "../utils/cookies.js";
+import { createReauthenticationToken, createSession } from "../services/auth.service.js";
+import { setReauthenticationCookie, setSessionCookies } from "../utils/cookies.js";
 
 const authRateLimit = rateLimit({
   windowMs: 15 * 60 * 1_000,
@@ -60,5 +60,25 @@ authRouter.get(
     response.redirect(
       `${env.CLIENT_ORIGIN}${user.profileCompleted ? "/dashboard" : "/onboarding"}`,
     );
+  },
+);
+
+authRouter.get(
+  "/google/reconfirm",
+  requireAuth,
+  passport.authenticate("google", { scope: ["profile", "email"], prompt: "select_account", session: false }),
+);
+authRouter.get(
+  "/google/reconfirm/callback",
+  requireAuth,
+  passport.authenticate("google", { session: false, failureRedirect: `${env.CLIENT_ORIGIN}/settings?error=google_reauth_failed` }),
+  (request, response) => {
+    const confirmedUser = request.user as Parameters<typeof createSession>[0];
+    if (confirmedUser.id !== request.auth!.userId) {
+      response.redirect(`${env.CLIENT_ORIGIN}/settings?error=google_account_mismatch`);
+      return;
+    }
+    setReauthenticationCookie(response, createReauthenticationToken(confirmedUser.id));
+    response.redirect(`${env.CLIENT_ORIGIN}/settings?account_reconfirmed=true`);
   },
 );

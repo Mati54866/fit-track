@@ -50,6 +50,18 @@ export const clearRefreshCookie = (response: Response): void => {
   });
 };
 
+export const setReauthenticationCookie = (response: Response, token: string): void => {
+  response.cookie("fittrack_reauth", token, {
+    ...baseCookieOptions,
+    path: "/api/v1/account",
+    maxAge: 5 * 60_000,
+  });
+};
+
+export const clearReauthenticationCookie = (response: Response): void => {
+  response.clearCookie("fittrack_reauth", { ...baseCookieOptions, path: "/api/v1/account" });
+};
+
 export const setSessionCookies = (
   response: Response,
   accessToken: string,

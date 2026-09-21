@@ -4,57 +4,33 @@ import { ProgressEntryModel } from "../models/progress-entry.model.js";
 import { WorkoutRoutineModel } from "../models/workout-routine.model.js";
 import { createNotification } from "./notification.service.js";
 
-const periodStart = (
-  period: "daily" | "weekly" | "monthly" | "one_time",
-): Date => {
-  const now = new Date();
-  if (period === "one_time") return new Date(0);
-  if (period === "daily")
-    return new Date(
-      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-    );
-  if (period === "weekly") {
-    const day = now.getUTCDay() || 7;
-    return new Date(
-      Date.UTC(
-        now.getUTCFullYear(),
-        now.getUTCMonth(),
-        now.getUTCDate() - day + 1,
-      ),
-    );
-  }
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-};
-
 export const evaluateGoalsForUser = async (userId: string): Promise<void> => {
   const goals = await GoalModel.find({ userId, achieved: false });
 
   for (const goal of goals) {
     let achieved = false;
-    const from = periodStart(goal.period);
+    const dateFilter = goal.deadline ? { $lte: goal.deadline } : {};
 
     if (goal.type === "workout_count") {
       achieved =
         (await WorkoutRoutineModel.countDocuments({
           userId,
-          completedAt: { $gte: from },
+          completedAt: dateFilter,
         })) >= goal.targetValue;
-    } else if (["calories", "protein", "carbs", "fat"].includes(goal.type)) {
+    } else if (goal.type === "calorie_target" || goal.type === "macro_target") {
+      const nutritionField = goal.type === "calorie_target" ? "calories" : goal.targetUnit;
       const totals = await NutritionEntryModel.aggregate<{ total: number }>([
-        { $match: { userId: goal.userId, date: { $gte: from } } },
+        { $match: { userId: goal.userId, ...(goal.deadline ? { date: dateFilter } : {}) } },
         { $unwind: "$items" },
-        { $group: { _id: null, total: { $sum: `$items.${goal.type}` } } },
+        { $group: { _id: null, total: { $sum: `$items.${nutritionField}` } } },
       ]);
       achieved = (totals[0]?.total ?? 0) >= goal.targetValue;
-    } else if (goal.type === "weight") {
+    } else if (goal.type === "target_weight") {
       const latest = await ProgressEntryModel.findOne({
         userId,
         weight: { $exists: true },
       }).sort({ date: -1 });
-      achieved =
-        goal.weightDirection === "lose"
-          ? (latest?.weight ?? Infinity) <= goal.targetValue
-          : (latest?.weight ?? -Infinity) >= goal.targetValue;
+      achieved = Math.abs((latest?.weight ?? Infinity) - goal.targetValue) < 0.01;
     }
 
     if (achieved) {
