@@ -4,7 +4,7 @@ Fitness and nutrition tracker built as a scale-ready Node.js/Express/TypeScript 
 
 ## Structure
 
-- [`backend`](./backend) — API, database models, tests, Docker image, and API documentations.
+- [`backend`](./backend) — API, databases models, tests, Docker image, and API documentations.
 - `frontend` — reserved for the React/TypeScript client phase.
 
 ## Development
